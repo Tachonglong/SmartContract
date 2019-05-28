@@ -20,7 +20,7 @@ class TokenMain extends Contract {
     'addWashing',
     'addPacking',
     'addProcessing',
-   // 'addDistributioncenter()',
+    'addDistributioncenter',
     'addEnduser'
   ]
   static publicFuncs = [
@@ -29,19 +29,18 @@ class TokenMain extends Contract {
     'createFactory',
     'getFactory',
     'addWashing',
-  //'getWashing',
+    //'getWashing',
     'addPacking',
-  //'getPacking',
+    //'getPacking',
     'addProcessing',
-  //'getProcessing',
+    //'getProcessing',
     'createTransportation',
     'getTransportation',
     'createBorderCrossing',
     'getBorderCrossing',
     'createWarehouse',
     'getWarehouse',
-  // ' addDistributioncenter()',
-    
+    'addDistributioncenter',
     'createMarket',
     'getMarket',
     'addEnduser'
@@ -71,7 +70,7 @@ class TokenMain extends Contract {
     this._product = new Product(data)
     this._user = new User(data)
   }
-  //---------------------USER------------------------------
+  //---------------------FARM------------------------------
 
   async createFarm() {
     let farm = await this._user.createUsers('FARM')
@@ -81,6 +80,8 @@ class TokenMain extends Contract {
     let farm = this._user.getUsersByType('FARM')
     return farm
   }
+
+
   // async createFactory() {
   //   let factory = await this._user.createUsers('FACTORY')
   //   return factory
@@ -89,7 +90,7 @@ class TokenMain extends Contract {
   //   let farm = this._user.getUsersByType('FACTORY')
   //   return farm
   // }
-  
+
   // async createWarehouse() {
   //   let warehouse = await this._user.createUsers('WAREHOUSE')
   //   return warehouse
@@ -99,9 +100,10 @@ class TokenMain extends Contract {
   //   return farm
   // }
 
-  // --------------------XỬ LÝ---------------------------
 
 
+
+  // --------------------FACTORY---------------------------
   async createFactory() {
     await this._user.checkUser(this.sender, 'FARM')
     let factory = await this._product.createProduct('FACTORY')
@@ -116,8 +118,7 @@ class TokenMain extends Contract {
     return 'ADD SUCCESS'
   }
   async addPacking() {
-    // let checkWashing = this._product.getProductByAddress(this.sender)
-    // if (!checkWashing || checkWashing.type !== 'WASHING') throw 'WASHING IS NOT EXIST'
+
     let checkFactory = this._product.getProductByAddress(this.sender)
     if (!checkFactory || checkFactory.type !== 'FACTORY') throw 'FACTORY IS NOT EXIST'
     let Packing = await this._product.createProduct('PACKING')
@@ -125,61 +126,90 @@ class TokenMain extends Contract {
     //return { Packing }
     return 'ADD SUCCESS'
   }
-  
+
   async addProcessing() {
-    // let checkWashing = this._product.getProductByAddress(this.sender)
-    // if (!checkWashing || checkWashing.type !== 'WASHING') throw 'WASHING IS NOT EXIST'
+
     let checkFactory = this._product.getProductByAddress(this.sender)
     if (!checkFactory || checkFactory.type !== 'FACTORY') throw 'FACTORY IS NOT EXIST'
-    let Processing= await this._product.createProduct('PROCESSING')
+    let Processing = await this._product.createProduct('PROCESSING')
     this.setToAddress(Processing.address)
-   // return { Processing }
-   return 'ADD SUCCESS'
+    // return { Processing }
+    return 'ADD SUCCESS'
   }
-  async createWarehouse() {
-    await this._user.checkUser(this.sender, 'BORDERCROSSING')
-    let warehouse = await this._product.createProduct('WAREHOUSE')
-    return warehouse
-  }
-  async addEnduser() {
-    let checkMarket = this._product.getProductByAddress(this.sender)
-    if (!checkMarket || checkMarket.type !== 'MARKET') throw 'MARKET IS NOT EXIST'
-    let Enduser = await this._product.createProduct('ENDUSER')
-    this.setToAddress(Enduser.address)
-   // return { Enduser }
-   return 'ADD SUCCESS'
-  }
-  // async addDistributioncenter(){
-  //   let checkWarehose = this._product.getProductByAddress(this.sender)
-  //   if (!checkWarehose || checkWarehose.type !== 'WAREHOUSE') throw 'WAREHOUSE IS NOT EXIST'
-  //   let Distributioncenter = await this._product.createProduct('DISTRIBUTIONCENTER')
-  //   this.setToAddress(Distributioncenter.address)
-  //  // return { Enduser }
-  //  return 'ADD SUCCESS'
-  // }
-  
+  // --------------------TRASPORTATION--------------------------
   async createTransportation() {
     await this._user.checkUser(this.sender, 'FACTORY')
     let transportation = await this._product.createProduct('TRANSPORTATION')
     return transportation
   }
+
+  // --------------------BORDERCROSSING---------------------------
   async createBorderCrossing() {
     await this._user.checkUser(this.sender, 'TRANSPORTATION')
     let bordercrossing = await this._product.createProduct('BORDERCROSSING')
     return bordercrossing
   }
-  async createMarket() {
+
+
+  // --------------------WAREHOUSE---------------------------
+  async createWarehouse() {
+    await this._user.checkUser(this.sender, 'BORDERCROSSING')
+    let warehouse = await this._product.createProduct('WAREHOUSE')
+    return warehouse
+  }
+  async addDistributioncenter(){
+    let checkWarehouse = this._product.getProductByAddress(this.sender)
+    if (!checkWarehouse || checkWarehouse.type !== 'WAREHOUSE') throw 'MARKET IS NOT EXIST'
+    let distributioncenter = await this._product.createProduct('DISTRIBUTIONCENTER')
+    this.setToAddress(distributioncenter.address)
+    // return { Enduser }
+    return 'ADD SUCCESS'
+  }
+
+   // --------------------MARKET---------------------------
+   async createMarket() {
     await this._user.checkUser(this.sender, 'WAREHOUSE')
     let market = await this._product.createProduct('MARKET')
     return market
   }
-  async createEnduser() {
-    await this._user.checkUser(this.sender, 'MARKET')
-    let enduser = await this._product.createProduct('ENDUSER')
-    return enduser
+
+
+  // --------------------END USER ---------------------------
+  async addEnduser() {
+    let checkMarket = this._product.getProductByAddress(this.sender)
+    if (!checkMarket || checkMarket.type !== 'MARKET') throw 'MARKET IS NOT EXIST'
+    let Enduser = await this._product.createProduct('ENDUSER')
+    this.setToAddress(Enduser.address)
+    // return { Enduser }
+    return 'ADD SUCCESS'
   }
 
+
+  getFactory() {
+    return this._product.getProductsByType('FACTORY')
+  }
+  getTransportation() {
+    return this._product.getProductsByType('TRANSPORTATION')
+  }
+  getBorderCrossing() {
+    return this._product.getProductsByType('BORDERCROSSING')
+  }
+  getWarehouse() {
+    return this._product.getProductsByType('WAREHOUSE')
+  }
+  getMarket() {
+    return this._product.getProductsByType('MARKET')
+  }
+
+  
  
+  // async createEnduser() {
+  //   await this._user.checkUser(this.sender, 'MARKET')
+  //   let enduser = await this._product.createProduct('ENDUSER')
+  //   return enduser
+  // }
+
+
   // async addDistributioncenter() {
   //   // let checkWashing = this._product.getProductByAddress(this.sender)
   //   // if (!checkWashing || checkWashing.type !== 'WASHING') throw 'WASHING IS NOT EXIST'
@@ -239,29 +269,15 @@ class TokenMain extends Contract {
   //   // return {market }
   //   return 'ADD SUCCESS'
   // }
-  
+
   // getFamer() {
   //   return this._product.getProductsByType('FARM')
   // }
-  getFactory() {
-    return this._product.getProductsByType('FACTORY')
-  }
-  getTransportation() {
-    return this._product.getProductsByType('TRANSPORTATION')
-  }
-  getBorderCrossing() {
-    return this._product.getProductsByType('BORDERCROSSING')
-  }
-  getWarehouse() {
-    return this._product.getProductsByType('WAREHOUSE')
-  }
-  getMarket() {
-    return this._product.getProductsByType('MARKET')
-  }
+  
   // getEnduse() {
   //   return this._product.getProductsByType('ENDUSER')
   // }
-  
+
 
 
 }
