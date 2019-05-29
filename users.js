@@ -1,5 +1,5 @@
 import Contract from 'Contract'
-const types = ['FARM', 'FACTORY', 'WAREHOUSE']//'ENDUSER',
+const types = ['FARM']//'ENDUSER', 'FACTORY', 'WAREHOUSE'
 class Users extends Contract {
   async createUsers (type) {
     if (!types.includes(type)) throw 'CREATE USER FAIL'
