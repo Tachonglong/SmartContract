@@ -50,7 +50,7 @@ class TokenMain extends Contract {
   static schemas = {
     name: {
       type: String,
-      default: 'DISTRIBUTION'
+      default: 'AGRI_FLOWCHART_SAMPLE'
     },
     accounts: [
       {
